@@ -109,7 +109,7 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
                 width: 370,
                 height: 600,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Colors.lightBlue.shade100.withValues(alpha: 0.3),
                 ),
                 child: Column(
                   children: [
@@ -170,14 +170,14 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
             ),
           ),
           Positioned(
-            bottom: 49,
+            bottom: 40,
             child: InkWell(
               onTap: () => Navigator.pop(context),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.lightBlue.shade400.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
