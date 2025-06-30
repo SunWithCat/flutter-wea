@@ -90,11 +90,6 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final baseSize = MediaQuery.of(context).size;
-    final iconSize = baseSize.width * 0.15;
-    final containerWidth = baseSize.width * 0.85;
-    final containerHeight = baseSize.height * 0.73;
-    final windFontSize = baseSize.width * 0.04;
     return Scaffold(
       resizeToAvoidBottomInset: false, // 不用调整尺寸
       body: Stack(
@@ -111,8 +106,8 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                width: containerWidth,
-                height: containerHeight,
+                width: 370,
+                height: 600,
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.3),
                 ),
@@ -175,15 +170,12 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
             ),
           ),
           Positioned(
-            bottom: iconSize * 0.8,
+            bottom: 49,
             child: InkWell(
               onTap: () => Navigator.pop(context),
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: iconSize * 0.3,
-                  vertical: windFontSize * 0.2,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
@@ -191,9 +183,8 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_back, size: iconSize * 0.4),
-                    SizedBox(height: iconSize * 0.1),
-                    Text('返回', style: TextStyle(fontSize: iconSize * 0.25)),
+                    Icon(Icons.arrow_back, size: 24),
+                    Text('返回', style: TextStyle(fontSize: 16)),
                   ],
                 ),
               ),

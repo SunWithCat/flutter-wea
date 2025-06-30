@@ -120,16 +120,6 @@ class _WeatherShowState extends State<WeatherShow> {
 
   @override
   Widget build(BuildContext context) {
-    final baseSize = MediaQuery.of(context).size;
-    final iconSize = baseSize.width * 0.15;
-    final containerHeight = baseSize.height * 0.3;
-    final containerWidth = baseSize.width * 0.8;
-    final tempFontSize = baseSize.width * 0.1;
-    final weatherFontSize = baseSize.width * 0.12;
-    final cityFontSize = baseSize.width * 0.05;
-    final updateFontSize = baseSize.width * 0.04;
-    final windFontSize = baseSize.width * 0.04;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -149,8 +139,8 @@ class _WeatherShowState extends State<WeatherShow> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
                   child: Container(
-                    width: containerWidth,
-                    height: containerHeight,
+                    width: 300,
+                    height: 300,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
                     ),
@@ -160,27 +150,22 @@ class _WeatherShowState extends State<WeatherShow> {
                         children: [
                           Text(
                             cityName,
-                            style: TextStyle(fontSize: cityFontSize),
+                            style: TextStyle(fontSize: 32),
                             textAlign: TextAlign.center,
                           ),
-                          SizedBox(height: baseSize.height * 0.02),
-                          Text(
-                            temperature,
-                            style: TextStyle(fontSize: tempFontSize),
-                          ),
+
+                          SizedBox(height: 5),
+                          Text(temperature, style: TextStyle(fontSize: 27)),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                weatherText,
-                                style: TextStyle(fontSize: weatherFontSize),
-                              ),
-                              SizedBox(width: iconSize),
+                              Text(weatherText, style: TextStyle(fontSize: 27)),
+                              SizedBox(width: 36),
                               if (weatherCode.isNotEmpty)
                                 SvgPicture.asset(
                                   'assets/icons/$weatherCode.svg',
-                                  width: iconSize,
-                                  height: iconSize,
+                                  width: 27,
+                                  height: 27,
                                   fit: BoxFit.contain,
                                 ),
                             ],
@@ -188,15 +173,19 @@ class _WeatherShowState extends State<WeatherShow> {
                           Text(
                             '$windDir $windScale',
                             style: TextStyle(
-                              fontSize: windFontSize,
+                              fontSize: 16,
                               color: Colors.black54,
                             ),
                             textAlign: TextAlign.center,
                           ),
                           Text(
                             updateTime,
-                            style: TextStyle(fontSize: updateFontSize),
+                            style: TextStyle(fontSize: 12),
                             textAlign: TextAlign.center,
+                          ),
+                          IconButton(
+                            onPressed: fetchWeather,
+                            icon: Icon(Icons.refresh_sharp),
                           ),
                         ],
                       ),
@@ -205,15 +194,7 @@ class _WeatherShowState extends State<WeatherShow> {
                 ),
               ),
           Positioned(
-            top: containerHeight * 1.22,
-            left: containerWidth * 0.8,
-            child: IconButton(
-              onPressed: fetchWeather,
-              icon: Icon(Icons.refresh_sharp),
-            ),
-          ),
-          Positioned(
-            bottom: iconSize * 0.8,
+            bottom: 49,
             child: InkWell(
               onTap: () async {
                 final result = await Navigator.push(
@@ -235,10 +216,7 @@ class _WeatherShowState extends State<WeatherShow> {
               },
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: iconSize * 0.3,
-                  vertical: windFontSize * 0.2,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
@@ -246,9 +224,8 @@ class _WeatherShowState extends State<WeatherShow> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.location_city, size: iconSize * 0.4),
-                    SizedBox(height: iconSize * 0.1),
-                    Text('城市', style: TextStyle(fontSize: iconSize * 0.25)),
+                    Icon(Icons.location_city, size: 24),
+                    Text('城市', style: TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
