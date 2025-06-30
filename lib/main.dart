@@ -83,12 +83,14 @@ class _WeatherShowState extends State<WeatherShow> {
   List<HourlyForecast> hourlyForecasts = [];
   List<DailyForecast> dailyForcecasts = [];
 
+  String feelsLikeTemp = '';
+  String todayTextDay = '';
+
   // 启动初始时加载已保存的城市
   @override
   void initState() {
     super.initState();
     loadCityFromPrefs();
-    // fetchWeather();
   }
 
   // 保存城市信息到本地
@@ -119,6 +121,7 @@ class _WeatherShowState extends State<WeatherShow> {
     });
     try {
       await Future.wait([
+        // 并行执行三个天气请求
         fetchNowWeather(),
         fetchHourlyForecast(),
         fetchDailyForecast(),
@@ -152,6 +155,7 @@ class _WeatherShowState extends State<WeatherShow> {
         weatherCode = data['now']['icon']; // 更新天气代码
         updateTime =
             ' 更新时间：${data['now']['obsTime'].substring(11, 16)}'; // 更新时间
+        feelsLikeTemp = data['now']['feelsLike'] + '°C'; // 体感温度
         isLoading = false;
       });
     } else {
@@ -173,6 +177,7 @@ class _WeatherShowState extends State<WeatherShow> {
         hourlyForecasts =
             hourlyData.map((item) {
               return HourlyForecast(
+                // 对于每个item，创建一个HourlyForecast对象
                 time: item['fxTime'].substring(11, 16),
                 temp: '${item['temp']}',
                 icon: item['icon'],
@@ -206,6 +211,7 @@ class _WeatherShowState extends State<WeatherShow> {
                 textDay: item['textDay'],
               );
             }).toList();
+        todayTextDay = dailyData.isNotEmpty ? dailyData[0]['textDay'] : '';
       });
     } else {
       throw Exception('获取天气数据失败');
@@ -240,8 +246,9 @@ class _WeatherShowState extends State<WeatherShow> {
                     height: 27,
                     fit: BoxFit.contain,
                     colorFilter: ColorFilter.mode(
+                      // 设置颜色滤镜
                       Colors.lightBlueAccent,
-                      BlendMode.srcIn,
+                      BlendMode.srcIn, // 使用指定的颜色
                     ),
                   ),
               ],
@@ -372,6 +379,23 @@ class _WeatherShowState extends State<WeatherShow> {
     );
   }
 
+  // 顶部天气概述
+  Widget _buildWeatherSummaryText() {
+    if (todayTextDay.isEmpty || feelsLikeTemp.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final summary = '今天的天气是 $todayTextDay，体感温度为 $feelsLikeTemp。\n追求源于热爱！';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Text(
+        summary,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 18, height: 1.5),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -395,7 +419,8 @@ class _WeatherShowState extends State<WeatherShow> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(height: 200),
+                    _buildWeatherSummaryText(),
+                    SizedBox(height: 20),
                     _buildCurrentWeatherCard(),
                     SizedBox(height: 30),
                     _buildWeatherDetailCard(),
@@ -421,7 +446,7 @@ class _WeatherShowState extends State<WeatherShow> {
                     cityName = newCityName;
                     cityId = newCityId;
                   });
-                  await saveCityToPrefs(newCityName, newCityId);
+                  await saveCityToPrefs(newCityName, newCityId); // 等待执行完成
                   fetchWeather();
                 }
               },
@@ -433,7 +458,7 @@ class _WeatherShowState extends State<WeatherShow> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.min, // 只占据足够的空间
                   children: [
                     Icon(Icons.location_city, size: 24),
                     Text('城市', style: TextStyle(fontSize: 16)),

@@ -20,7 +20,7 @@
 
 1.  **克隆仓库**
     ```bash
-    git clone [https://github.com/your-username/wea.git](https://github.com/your-username/wea.git) cd wea
+    git clone [https://github.com/SunWithCat/wea.git](https://github.com/SunWithCat/wea.git) cd wea
     ```
 
 2.  **获取依赖**
