@@ -1,42 +1,14 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:wea/city_sele.dart';
+import 'package:wea/pages/city_sele.dart';
 import 'package:wea/config.dart';
 
-// 代表逐小时预报的数据模型
-class HourlyForecast {
-  final String time;
-  final String temp;
-  final String icon;
-  final String text;
-  HourlyForecast({
-    required this.time,
-    required this.temp,
-    required this.icon,
-    required this.text,
-  });
-}
-
-// 代表未来几天预报的数据模型
-class DailyForecast {
-  final String date;
-  final String tempMax;
-  final String tempMin;
-  final String iconDay;
-  final String textDay;
-
-  DailyForecast({
-    required this.date,
-    required this.tempMax,
-    required this.tempMin,
-    required this.iconDay,
-    required this.textDay,
-  });
-}
+import 'package:wea/widgets/current_weather_card.dart';
+import 'package:wea/widgets/weather_detail_card.dart';
+import 'package:wea/widgets/weather_summary_text.dart';
 
 void main() {
   runApp(const MyApp());
@@ -218,184 +190,6 @@ class _WeatherShowState extends State<WeatherShow> {
     }
   }
 
-  // 构建顶部的实时天气卡片
-  Widget _buildCurrentWeatherCard() {
-    return Container(
-      width: 370,
-      height: 370,
-      decoration: BoxDecoration(
-        color: Colors.lightBlue.shade100.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(cityName, style: TextStyle(fontSize: 32)),
-            SizedBox(height: 5),
-            Text(temperature, style: TextStyle(fontSize: 27)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(weatherText, style: TextStyle(fontSize: 27)),
-                SizedBox(width: 8),
-                if (weatherCode.isNotEmpty)
-                  SvgPicture.asset(
-                    'assets/icons/$weatherCode.svg',
-                    width: 27,
-                    height: 27,
-                    fit: BoxFit.contain,
-                    colorFilter: ColorFilter.mode(
-                      // 设置颜色滤镜
-                      Colors.lightBlueAccent,
-                      BlendMode.srcIn, // 使用指定的颜色
-                    ),
-                  ),
-              ],
-            ),
-            Text(
-              '$windDir $windScale',
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              updateTime,
-              style: TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-            IconButton(
-              onPressed: fetchWeather,
-              icon: Icon(Icons.refresh_sharp),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // 构建底部的天气详情卡片
-  Widget _buildWeatherDetailCard() {
-    return Container(
-      width: 370,
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.lightBlue.shade100.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '逐时预报',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          SizedBox(
-            height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: hourlyForecasts.length,
-              itemBuilder: (context, index) {
-                final forecast = hourlyForecasts[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(forecast.time, style: TextStyle(fontSize: 16)),
-                      SvgPicture.asset(
-                        'assets/icons/${forecast.icon}.svg',
-                        width: 24,
-                        height: 24,
-                        colorFilter: ColorFilter.mode(
-                          Colors.black87,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      Text(
-                        "${forecast.temp}°C",
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          Divider(color: Colors.black38, thickness: 1, height: 20),
-          // 未来几天预报
-          Text(
-            "未来预报",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          ListView.builder(
-            shrinkWrap: true, // 让ListView根据内容自适应高度
-            physics: NeverScrollableScrollPhysics(), // 外层已有滚动
-            itemCount: dailyForcecasts.length,
-            itemBuilder: (context, index) {
-              final forecast = dailyForcecasts[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      forecast.date,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/${forecast.iconDay}.svg',
-                          width: 24,
-                          height: 24,
-                          colorFilter: ColorFilter.mode(
-                            Colors.black,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            forecast.textDay,
-                            style: TextStyle(color: Colors.black, fontSize: 16),
-                          ),
-                        ),
-                        Text(
-                          "${forecast.tempMin}°C/${forecast.tempMax}°C",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 顶部天气概述
-  Widget _buildWeatherSummaryText() {
-    if (todayTextDay.isEmpty || feelsLikeTemp.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final summary = '今天的天气是 $todayTextDay，体感温度为 $feelsLikeTemp。\n追求源于热爱！';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Text(
-        summary,
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 18, height: 1.5),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -419,11 +213,26 @@ class _WeatherShowState extends State<WeatherShow> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildWeatherSummaryText(),
+                    WeatherSummaryText(
+                      feelsLikeTemp: feelsLikeTemp,
+                      todayTextDay: todayTextDay,
+                    ),
                     SizedBox(height: 20),
-                    _buildCurrentWeatherCard(),
+                    CurrentWeatherCard(
+                      cityName: cityName,
+                      temperature: temperature,
+                      weatherText: weatherText,
+                      weatherCode: weatherCode,
+                      windDir: windDir,
+                      windScale: windScale,
+                      updateTime: updateTime,
+                      onRefresh: fetchWeather,
+                    ),
                     SizedBox(height: 30),
-                    _buildWeatherDetailCard(),
+                    WeatherDetailCard(
+                      hourlyForecasts: hourlyForecasts,
+                      dailyForcecasts: dailyForcecasts,
+                    ),
                     SizedBox(height: 80),
                   ],
                 ),
