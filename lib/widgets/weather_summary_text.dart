@@ -15,7 +15,7 @@ class WeatherSummaryText extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final summary = '今天的天气是 $todayTextDay，体感温度为 $feelsLikeTemp。\n追求源于热爱！';
+    final summary = '今天的天气是$todayTextDay，体感温度为$feelsLikeTemp。\n追求源于热爱！';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Text(

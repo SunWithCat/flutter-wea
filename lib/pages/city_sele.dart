@@ -177,14 +177,24 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue.shade400.withValues(alpha: 0.3),
+                  color: Colors.lightBlue.shade200.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_back, size: 24),
-                    Text('返回', style: TextStyle(fontSize: 16)),
+                    Icon(
+                      Icons.arrow_back,
+                      size: 24,
+                      color: Colors.grey.shade700,
+                    ),
+                    Text(
+                      '返回',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
                   ],
                 ),
               ),

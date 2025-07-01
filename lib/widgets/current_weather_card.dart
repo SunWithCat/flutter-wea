@@ -10,6 +10,11 @@ class CurrentWeatherCard extends StatelessWidget {
   final String windScale;
   final String updateTime;
   final VoidCallback onRefresh;
+  final String humidity;
+  final String pressure;
+  final String visibility;
+  final String precipitation;
+
   const CurrentWeatherCard({
     super.key,
     required this.cityName,
@@ -20,57 +25,82 @@ class CurrentWeatherCard extends StatelessWidget {
     required this.windScale,
     required this.updateTime,
     required this.onRefresh,
+    required this.humidity,
+    required this.pressure,
+    required this.visibility,
+    required this.precipitation,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 370,
-      height: 370,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.lightBlue.shade100.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(cityName, style: TextStyle(fontSize: 32)),
-            SizedBox(height: 5),
-            Text(temperature, style: TextStyle(fontSize: 27)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(weatherText, style: TextStyle(fontSize: 27)),
-                SizedBox(width: 8),
-                if (weatherCode.isNotEmpty)
-                  SvgPicture.asset(
-                    'assets/icons/$weatherCode.svg',
-                    width: 27,
-                    height: 27,
-                    fit: BoxFit.contain,
-                    colorFilter: ColorFilter.mode(
-                      // 设置颜色滤镜
-                      Colors.lightBlueAccent,
-                      BlendMode.srcIn, // 使用指定的颜色
-                    ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(cityName, style: TextStyle(fontSize: 32)),
+          SizedBox(height: 5),
+          Text(temperature, style: TextStyle(fontSize: 27)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(weatherText, style: TextStyle(fontSize: 27)),
+              SizedBox(width: 24),
+              if (weatherCode.isNotEmpty)
+                SvgPicture.asset(
+                  'assets/icons/$weatherCode.svg',
+                  width: 27,
+                  height: 27,
+                  fit: BoxFit.contain,
+                  colorFilter: ColorFilter.mode(
+                    // 设置颜色滤镜
+                    Colors.lightBlueAccent,
+                    BlendMode.srcIn, // 使用指定的颜色
                   ),
-              ],
-            ),
-            Text(
-              '$windDir $windScale',
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              updateTime,
-              style: TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-            IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh_sharp)),
-          ],
-        ),
+                ),
+            ],
+          ),
+          Text(
+            '$windDir $windScale',
+            style: TextStyle(fontSize: 16, color: Colors.black54),
+            textAlign: TextAlign.center,
+          ),
+          const Divider(color: Colors.black54, thickness: 1, height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildDetailItem(Icons.water_drop_outlined, "湿度", humidity),
+              _buildDetailItem(Icons.speed_outlined, "压强", pressure),
+              _buildDetailItem(Icons.visibility_outlined, "能见度", visibility),
+              _buildDetailItem(Icons.umbrella_outlined, "降水", precipitation),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Text(
+            updateTime,
+            style: TextStyle(fontSize: 13),
+            textAlign: TextAlign.center,
+          ),
+          IconButton(onPressed: onRefresh, icon: Icon(Icons.refresh_sharp)),
+        ],
       ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String label, String value) {
+    return Column(
+      children: [
+        Icon(icon, size: 24, color: Colors.black54),
+        SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 14, color: Colors.black54)),
+        SizedBox(height: 2),
+        Text(value, style: TextStyle(fontSize: 14)),
+      ],
     );
   }
 }

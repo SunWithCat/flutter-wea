@@ -9,6 +9,7 @@ import 'package:wea/config.dart';
 import 'package:wea/widgets/current_weather_card.dart';
 import 'package:wea/widgets/weather_detail_card.dart';
 import 'package:wea/widgets/weather_summary_text.dart';
+import 'package:wea/widgets/weather_warning_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,12 +52,18 @@ class _WeatherShowState extends State<WeatherShow> {
   String weatherCode = '';
   String updateTime = '';
   bool isLoading = true;
+  String humidity = '';
+  String pressure = '';
+  String visibility = '';
+  String precipitation = '';
 
   List<HourlyForecast> hourlyForecasts = [];
   List<DailyForecast> dailyForcecasts = [];
 
   String feelsLikeTemp = '';
   String todayTextDay = '';
+
+  List<WeatherWarning> weatherWarnings = [];
 
   // 启动初始时加载已保存的城市
   @override
@@ -97,6 +104,7 @@ class _WeatherShowState extends State<WeatherShow> {
         fetchNowWeather(),
         fetchHourlyForecast(),
         fetchDailyForecast(),
+        fetchWeatherWarnings(),
       ]);
     } catch (e) {
       setState(() {
@@ -128,7 +136,10 @@ class _WeatherShowState extends State<WeatherShow> {
         updateTime =
             ' 更新时间：${data['now']['obsTime'].substring(11, 16)}'; // 更新时间
         feelsLikeTemp = data['now']['feelsLike'] + '°C'; // 体感温度
-        isLoading = false;
+        humidity = '${data['now']['humidity']}%'; // 湿度
+        pressure = '${data['now']['pressure']}hPa'; // 气压
+        visibility = '${data['now']['vis']}km'; // 能见度
+        precipitation = '${data['now']['precip']}mm'; // 降水量
       });
     } else {
       throw Exception('获取天气数据失败');
@@ -190,6 +201,36 @@ class _WeatherShowState extends State<WeatherShow> {
     }
   }
 
+  // 获取天气预警信息
+  Future<void> fetchWeatherWarnings() async {
+    final url = Uri.parse(
+      '${Config.baseUrl}/v7/warning/now?location=$cityId&key=$apiKey&lang=zh',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      if (data['code'] == '200' && data['warning'] != null) {
+        final List<dynamic> warningData = data['warning'];
+        setState(() {
+          weatherWarnings =
+              warningData.map((item) {
+                return WeatherWarning(
+                  title: item['title'],
+                  text: item['text'],
+                  level: item['level'],
+                  type: item['type'],
+                );
+              }).toList();
+        });
+      } else {
+        setState(() {
+          weatherWarnings = [];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -218,6 +259,8 @@ class _WeatherShowState extends State<WeatherShow> {
                       todayTextDay: todayTextDay,
                     ),
                     SizedBox(height: 20),
+                    WeatherWarningCard(warnings: weatherWarnings),
+                    SizedBox(height: 20),
                     CurrentWeatherCard(
                       cityName: cityName,
                       temperature: temperature,
@@ -226,6 +269,10 @@ class _WeatherShowState extends State<WeatherShow> {
                       windDir: windDir,
                       windScale: windScale,
                       updateTime: updateTime,
+                      humidity: humidity,
+                      pressure: pressure,
+                      visibility: visibility,
+                      precipitation: precipitation,
                       onRefresh: fetchWeather,
                     ),
                     SizedBox(height: 30),
@@ -233,7 +280,13 @@ class _WeatherShowState extends State<WeatherShow> {
                       hourlyForecasts: hourlyForecasts,
                       dailyForcecasts: dailyForcecasts,
                     ),
-                    SizedBox(height: 80),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Text(
+                        '数据来源：和风天气',
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -263,14 +316,24 @@ class _WeatherShowState extends State<WeatherShow> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue.shade400.withValues(alpha: 0.3),
+                  color: Colors.lightBlue.shade200.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min, // 只占据足够的空间
                   children: [
-                    Icon(Icons.location_city, size: 24),
-                    Text('城市', style: TextStyle(fontSize: 16)),
+                    Icon(
+                      Icons.location_city,
+                      size: 24,
+                      color: Colors.grey.shade700,
+                    ),
+                    Text(
+                      '城市',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
                   ],
                 ),
               ),
