@@ -3,20 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import '../config.dart';
 
 class CitySeletorPage extends StatefulWidget {
-  const CitySeletorPage({super.key});
+  final http.Client? client; // 允许 client 为空，以便在 app 中正常使用
+  const CitySeletorPage({super.key, this.client});
 
   @override
   State<CitySeletorPage> createState() => _CitySeletorPageState();
 }
 
 class _CitySeletorPageState extends State<CitySeletorPage> {
+  late http.Client _client;
   final TextEditingController _controller = TextEditingController();
-  final String apiKey = '6c1e82b4726f4df99d71d3b7733f0730';
+  final String apiKey = Config.apiKey;
   List<Map<String, String>> searchResults = [];
   Timer? _debounce; // 防抖计时器
   int _searchVersion = 0; // 请求版本号，用于忽略旧结果
+
+  @override
+  void initState() {
+    super.initState();
+    // 如果 widget 提供了 client，就用它，否则创建一个新的
+    _client = widget.client ?? http.Client();
+  }
 
   // 监听输入框文字变化并触发防抖逻辑
   void onSearchChanged(String keyword) {
@@ -41,7 +51,7 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
       'https://mt54e3pvdv.re.qweatherapi.com/geo/v2/city/lookup?location=$keyword&key=$apiKey&lang=zh',
     );
     try {
-      final response = await http.get(url);
+      final response = await _client.get(url); // 使用注入的 client
       if (currentVersion != _searchVersion) return;
       if (response.statusCode == 200) {
         final decoded = utf8.decode(response.bodyBytes);
@@ -85,6 +95,10 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    // 如果 client 是在 widget 内部创建的，则关闭它
+    if (widget.client == null) {
+      _client.close();
+    }
     super.dispose();
   }
 
@@ -101,6 +115,7 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
             width: double.infinity,
             height: double.infinity,
           ),
+          // Container(color: Colors.blue.shade200),
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: BackdropFilter(

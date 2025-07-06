@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wea/pages/city_sele.dart';
 import 'package:wea/config.dart';
+import './utils/custom_route.dart';
 
 import 'package:wea/widgets/current_weather_card.dart';
 import 'package:wea/widgets/weather_detail_card.dart';
@@ -297,9 +298,10 @@ class _WeatherShowState extends State<WeatherShow> {
               onTap: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const CitySeletorPage(),
-                  ),
+                  SlideRightRoute(page: const CitySeletorPage()),
+                  // MaterialPageRoute(
+                  //   builder: (context) => const CitySeletorPage(),
+                  // ),
                 );
                 if (result != null && result is Map<String, String>) {
                   final newCityName = result['cityName']!;
