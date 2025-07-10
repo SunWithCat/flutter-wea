@@ -1,21 +1,21 @@
-import 'dart:convert';
+import 'dart:convert'; // 用于JSON编码
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
-import 'package:wea/pages/city_sele.dart';
+import 'package:flutter_test/flutter_test.dart'; // 测试核心库
+import 'package:http/http.dart' as http; // http请求库
+import 'package:mockito/annotations.dart'; // Mockito注解
+import 'package:mockito/mockito.dart'; // Mockito核心功能
+import 'package:wea/pages/city_sele.dart'; // 被测试的页面
 
-import 'city_selector_page_test.mocks.dart';
+import 'city_selector_page_test.mocks.dart'; // Mockito自动生成的文件
 
 // 使用 mockito 生成 http.Client 的模拟类
 @GenerateMocks([http.Client])
 void main() {
   group('CitySeletorPage Widget Tests', () {
-    late MockClient mockClient;
+    late MockClient mockClient; // 每个测试运行前被初始化
 
     setUp(() {
-      mockClient = MockClient();
+      mockClient = MockClient(); // 创建一个全新的实例，确保测试之间的独立性
     });
 
     // 封装一个函数来构建和渲染 Widget
@@ -39,13 +39,14 @@ void main() {
         ],
       };
       when(mockClient.get(any)).thenAnswer(
+        // 当get方法被任何参数调用时
         (_) async =>
             http.Response.bytes(utf8.encode(jsonEncode(responsePayload)), 200),
       );
 
       // 操作 (Act)
-      await pumpWidget(tester);
-      await tester.enterText(find.byType(TextField), keyword);
+      await pumpWidget(tester); // 渲染初始界面
+      await tester.enterText(find.byType(TextField), keyword); // 模拟用户输入
       await tester.pump(const Duration(milliseconds: 500)); // 手动等待防抖计时器触发
       await tester.pump(); // 等待 Future 完成和 UI 更新
 
@@ -59,7 +60,7 @@ void main() {
     ) async {
       // 安排
       final keyword = 'nonexistentcity';
-      final responsePayload = {'code': '404'};
+      final responsePayload = {'code': '404'}; // 响应内容是未找到
       when(mockClient.get(any)).thenAnswer(
         (_) async =>
             http.Response.bytes(utf8.encode(jsonEncode(responsePayload)), 200),

@@ -31,7 +31,7 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
   // 监听输入框文字变化并触发防抖逻辑
   void onSearchChanged(String keyword) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(microseconds: 400), () {
+    _debounce = Timer(const Duration(milliseconds: 400), () {
       searchCity(keyword);
     });
   }
@@ -95,6 +95,7 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _controller.dispose();
     // 如果 client 是在 widget 内部创建的，则关闭它
     if (widget.client == null) {
       _client.close();

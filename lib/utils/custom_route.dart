@@ -1,30 +1,38 @@
 import 'package:flutter/material.dart';
 
 class SlideRightRoute extends PageRouteBuilder {
-  final Widget page;
-  SlideRightRoute({required this.page})
+  final WidgetBuilder builder;
+  SlideRightRoute({required this.builder})
     : super(
-        // 页面构建
         pageBuilder:
             (
               BuildContext context,
               Animation<double> animation,
-              Animation<double> secondrayAnimation,
-            ) => page,
-        // 过滤效果构建器
-        transitionsBuilder:
-            (
-              BuildContext context,
-              Animation<double> animation,
               Animation<double> secondaryAnimation,
-              Widget child,
-            ) => SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            ),
-        transitionDuration: const Duration(milliseconds: 200),
+            ) => builder(context),
+        transitionsBuilder: _buildTransitions,
+        transitionDuration: const Duration(milliseconds: 300),
       );
+
+  static Widget _buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    // Use a standard Material Design curve.
+    final curvedAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.fastOutSlowIn,
+    );
+
+    // Combine Fade and Slide transitions.
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(1.0, 0.0),
+        end: Offset.zero,
+      ).animate(curvedAnimation),
+      child: FadeTransition(opacity: curvedAnimation, child: child),
+    );
+  }
 }

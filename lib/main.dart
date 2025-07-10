@@ -298,7 +298,7 @@ class _WeatherShowState extends State<WeatherShow> {
               onTap: () async {
                 final result = await Navigator.push(
                   context,
-                  SlideRightRoute(page: const CitySeletorPage()),
+                  SlideRightRoute(builder: (context) => CitySeletorPage()),
                   // MaterialPageRoute(
                   //   builder: (context) => const CitySeletorPage(),
                   // ),
