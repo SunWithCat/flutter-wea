@@ -14,6 +14,8 @@ class CurrentWeatherCard extends StatelessWidget {
   final String pressure;
   final String visibility;
   final String precipitation;
+  final String aqi;
+  final String airCategory;
 
   const CurrentWeatherCard({
     super.key,
@@ -29,6 +31,8 @@ class CurrentWeatherCard extends StatelessWidget {
     required this.pressure,
     required this.visibility,
     required this.precipitation,
+    required this.airCategory,
+    required this.aqi,
   });
 
   @override
@@ -44,6 +48,19 @@ class CurrentWeatherCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(cityName, style: TextStyle(fontSize: 32)),
+          if (airCategory.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.lightBlue.shade200.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '天气质量：$airCategory($aqi)',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
           SizedBox(height: 5),
           Text(temperature, style: TextStyle(fontSize: 27)),
           Row(

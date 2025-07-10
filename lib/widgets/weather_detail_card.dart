@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,11 +36,44 @@ class DailyForecast {
 class WeatherDetailCard extends StatelessWidget {
   final List<HourlyForecast> hourlyForecasts;
   final List<DailyForecast> dailyForcecasts;
+  final String sunrise;
+  final String sunset;
   const WeatherDetailCard({
     super.key,
     required this.hourlyForecasts,
     required this.dailyForcecasts,
+    required this.sunrise,
+    required this.sunset,
   });
+
+  Widget _buildSunriseSunset(context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              Icon(CupertinoIcons.sunrise, color: Colors.orange),
+              SizedBox(height: 4),
+              Text('日出', style: TextStyle(fontSize: 16, color: Colors.black87)),
+              SizedBox(height: 5),
+              Text(sunrise, style: TextStyle(fontSize: 18)),
+            ],
+          ),
+          Column(
+            children: [
+              Icon(CupertinoIcons.sunset, color: Colors.deepOrange),
+              SizedBox(height: 4),
+              Text('日落', style: TextStyle(fontSize: 16, color: Colors.black87)),
+              SizedBox(height: 5),
+              Text(sunset, style: TextStyle(fontSize: 18)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +125,8 @@ class WeatherDetailCard extends StatelessWidget {
             ),
           ),
           Divider(color: Colors.black38, thickness: 1, height: 20),
+          // 日出日落显示
+          _buildSunriseSunset(context),
           // 未来几天预报
           Text(
             "未来预报",

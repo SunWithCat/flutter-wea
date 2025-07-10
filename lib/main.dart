@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wea/pages/city_sele.dart';
 import 'package:wea/config.dart';
+import 'package:wea/widgets/weather_indices_card.dart';
 import './utils/custom_route.dart';
 
 import 'package:wea/widgets/current_weather_card.dart';
@@ -58,6 +59,16 @@ class _WeatherShowState extends State<WeatherShow> {
   String visibility = '';
   String precipitation = '';
 
+  // 天气质量指数
+  String aqi = '';
+  String airCategory = '';
+  String airPrimary = ''; // 主要污染物
+
+  String sunrise = ''; // 日出
+  String sunset = ''; // 日落
+
+  List<DailyIndex> dailyIndices = []; // 生活指数
+
   List<HourlyForecast> hourlyForecasts = [];
   List<DailyForecast> dailyForcecasts = [];
 
@@ -101,11 +112,12 @@ class _WeatherShowState extends State<WeatherShow> {
     });
     try {
       await Future.wait([
-        // 并行执行三个天气请求
         fetchNowWeather(),
         fetchHourlyForecast(),
         fetchDailyForecast(),
         fetchWeatherWarnings(),
+        fetchAirQuality(),
+        fetchDailyIndices(),
       ]);
     } catch (e) {
       setState(() {
@@ -196,6 +208,10 @@ class _WeatherShowState extends State<WeatherShow> {
               );
             }).toList();
         todayTextDay = dailyData.isNotEmpty ? dailyData[0]['textDay'] : '';
+        if (dailyData.isNotEmpty) {
+          sunrise = dailyData[0]['sunrise'];
+          sunset = dailyData[0]['sunset'];
+        }
       });
     } else {
       throw Exception('获取天气数据失败');
@@ -232,6 +248,59 @@ class _WeatherShowState extends State<WeatherShow> {
     }
   }
 
+  // 获取实时天气质量指数
+  Future<void> fetchAirQuality() async {
+    final url = Uri.parse(
+      '${Config.baseUrl}/v7/air/now?location=$cityId&key=$apiKey&lang=zh',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final decodeBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodeBody);
+      if (data['code'] == '200' && data['now'] != null) {
+        setState(() {
+          aqi = data['now']['aqi'];
+          airCategory = data['now']['category'];
+          airPrimary =
+              data['now']['primary'] == 'NA' ? '无' : data['now']['primary'];
+        });
+      }
+    } else {
+      setState(() {
+        airCategory = '获取失败';
+      });
+    }
+  }
+
+  // 获取生活指数
+  Future<void> fetchDailyIndices() async {
+    final url = Uri.parse(
+      '${Config.baseUrl}/v7/indices/1d?location=$cityId&key=$apiKey&type=1,5,9&lang=zh',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(decodedBody);
+      if (data['code'] == '200' && data['daily'] != null) {
+        final List<dynamic> indicesData = data['daily'];
+        setState(() {
+          dailyIndices =
+              indicesData.map((item) {
+                return DailyIndex(
+                  category: item['category'],
+                  name: item['name'],
+                  text: item['text'],
+                );
+              }).toList();
+        });
+      } else {
+        setState(() {
+          dailyIndices = [];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,9 +328,10 @@ class _WeatherShowState extends State<WeatherShow> {
                       feelsLikeTemp: feelsLikeTemp,
                       todayTextDay: todayTextDay,
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     WeatherWarningCard(warnings: weatherWarnings),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    WeatherIndicesCard(indices: dailyIndices),
                     CurrentWeatherCard(
                       cityName: cityName,
                       temperature: temperature,
@@ -274,12 +344,16 @@ class _WeatherShowState extends State<WeatherShow> {
                       pressure: pressure,
                       visibility: visibility,
                       precipitation: precipitation,
+                      aqi: aqi,
+                      airCategory: airCategory,
                       onRefresh: fetchWeather,
                     ),
                     SizedBox(height: 30),
                     WeatherDetailCard(
                       hourlyForecasts: hourlyForecasts,
                       dailyForcecasts: dailyForcecasts,
+                      sunrise: sunrise,
+                      sunset: sunset,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
