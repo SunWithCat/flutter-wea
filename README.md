@@ -11,6 +11,14 @@
 * **响应式布局**：UI元素尺寸能根据屏幕大小自适应。
 * **动态图标**：根据天气状况码，动态加载对应的SVG天气图标。
 
+## 📸 预览
+
+<p align="center">
+  <img src="preview/image1.jpg" width="260">&emsp;
+  <img src="preview/image2.jpg" width="260">&emsp;
+  <img src="preview/image3.jpg" width="260">
+</p>
+
 ## 🛠️ 与核心库
 
 * **SVG支持**：[`flutter_svg`](https://pub.dev/packages/flutter_svg) - 用于加载和渲染矢量的天气图标。

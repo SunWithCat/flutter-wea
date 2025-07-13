@@ -77,6 +77,9 @@ class _WeatherShowState extends State<WeatherShow> {
 
   List<WeatherWarning> weatherWarnings = [];
 
+  // 从配置文件获取API密钥
+  final String apiKey = Config.apiKey;
+
   // 启动初始时加载已保存的城市
   @override
   void initState() {
@@ -102,9 +105,6 @@ class _WeatherShowState extends State<WeatherShow> {
     await prefs.setString('selectedCity', city);
     await prefs.setString('selectedCityId', id);
   }
-
-  // 从配置文件获取API密钥
-  final String apiKey = Config.apiKey;
 
   Future<void> fetchWeather() async {
     setState(() {
@@ -304,7 +304,7 @@ class _WeatherShowState extends State<WeatherShow> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false, // 防止键盘弹出时内容变形
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -318,8 +318,9 @@ class _WeatherShowState extends State<WeatherShow> {
           if (isLoading)
             Center(child: CircularProgressIndicator(color: Colors.lightBlue))
           else
+            // 单个组件可滚动
             SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: BouncingScrollPhysics(), // 回弹效果
               child: SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -373,9 +374,6 @@ class _WeatherShowState extends State<WeatherShow> {
                 final result = await Navigator.push(
                   context,
                   SlideRightRoute(builder: (context) => CitySeletorPage()),
-                  // MaterialPageRoute(
-                  //   builder: (context) => const CitySeletorPage(),
-                  // ),
                 );
                 if (result != null && result is Map<String, String>) {
                   final newCityName = result['cityName']!;
