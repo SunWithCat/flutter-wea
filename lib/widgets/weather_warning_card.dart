@@ -22,8 +22,12 @@ class WeatherWarningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (warnings.isEmpty) return const SizedBox.shrink(); // 没有预警不显示内容
+    
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+    
     return Container(
-      width: 370,
+      width: cardWidth,
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

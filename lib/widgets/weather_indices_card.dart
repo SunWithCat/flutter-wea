@@ -31,8 +31,12 @@ class WeatherIndicesCard extends StatelessWidget {
     if (indices.isEmpty) {
       return const SizedBox.shrink(); // 如果没有任何数据，则不显示
     }
+    
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+    
     return Container(
-      width: 370,
+      width: cardWidth,
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

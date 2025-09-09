@@ -322,9 +322,13 @@ class _WeatherShowState extends State<WeatherShow> {
             SingleChildScrollView(
               physics: BouncingScrollPhysics(), // 回弹效果
               child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width > 600 ? 40 : 16,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
                     WeatherSummaryText(
                       feelsLikeTemp: feelsLikeTemp,
                       todayTextDay: todayTextDay,
@@ -366,6 +370,7 @@ class _WeatherShowState extends State<WeatherShow> {
                   ],
                 ),
               ),
+            ),
             ),
           Positioned(
             bottom: 40,

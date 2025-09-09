@@ -37,8 +37,11 @@ class CurrentWeatherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+    
     return Container(
-      width: 370,
+      width: cardWidth,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.lightBlue.shade100.withValues(alpha: 0.7),

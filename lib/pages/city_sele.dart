@@ -105,6 +105,10 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final cardWidth = screenWidth > 600 ? 500.0 : screenWidth * 0.9;
+    final cardHeight = screenHeight > 800 ? 600.0 : screenHeight * 0.8;
     return Scaffold(
       resizeToAvoidBottomInset: false, // 不用调整尺寸
       body: Stack(
@@ -122,8 +126,8 @@ class _CitySeletorPageState extends State<CitySeletorPage> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                width: 370,
-                height: 600,
+                width: cardWidth,
+                height: cardHeight,
                 decoration: BoxDecoration(
                   color: Colors.lightBlue.shade100.withValues(alpha: 0.3),
                 ),
